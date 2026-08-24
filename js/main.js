@@ -42,25 +42,16 @@ function initLanding() {
 
 function initCustomCursor() {
   let cursorStep = 1;
-  let cursorLoop = 0;
-
   const applyCursorStep = () => {
-    document.body.classList.remove("is-cursor-click-02", "is-cursor-click-03");
-    if (cursorStep === 2) document.body.classList.add("is-cursor-click-02");
-    if (cursorStep === 3) document.body.classList.add("is-cursor-click-03");
+    document.body.classList.remove("is-cursor-loop-02", "is-cursor-loop-03");
+    if (cursorStep === 2) document.body.classList.add("is-cursor-loop-02");
+    if (cursorStep === 3) document.body.classList.add("is-cursor-loop-03");
   };
-
-  const advanceCursor = () => {
+  window.setInterval(() => {
     cursorStep = cursorStep === 3 ? 1 : cursorStep + 1;
     applyCursorStep();
-  };
-
-  const restartCursorLoop = () => {
-    if (cursorLoop) window.clearInterval(cursorLoop);
-    cursorLoop = window.setInterval(advanceCursor, 5000);
-  };
-
-  restartCursorLoop();
+  }, 5000);
+  applyCursorStep();
 }
 
 function initNavigation() {
@@ -529,7 +520,7 @@ function scaleDesktopCanvas() {
   const scale = window.innerWidth / 1920;
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
-  document.documentElement.style.setProperty("--footer-padding-bottom", `${400 / scale}px`);
+  document.documentElement.style.setProperty("--footer-padding-bottom", `${90 / scale}px`);
   shell.style.transform = `scale(${scale})`;
   shell.style.marginLeft = "0px";
   document.body.style.minHeight = `${shell.offsetHeight * scale}px`;

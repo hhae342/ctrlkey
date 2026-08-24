@@ -10,10 +10,10 @@
   --green: #9eff43;
   --canvas-scale: 1;
   --footer-padding-top: 200px;
-  --footer-padding-bottom: 400px;
-  --cursor-default: url("../assets/custom-cursor-50-50-01.png") 25 25, auto;
-  --cursor-click-02: url("../assets/custom-cursor-50-50-02.png") 25 25, auto;
-  --cursor-click-03: url("../assets/custom-cursor-50-50-03.png") 25 25, auto;
+  --footer-padding-bottom: 90px;
+  --cursor-default: url("../assets/custom-cursor-60-60-01.png") 30 30, auto;
+  --cursor-loop-02: url("../assets/custom-cursor-60-60-02.png") 30 30, auto;
+  --cursor-loop-03: url("../assets/custom-cursor-60-60-03.png") 30 30, auto;
   --font-display: "BioRhyme Expanded", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Arial, sans-serif;
   --font-menu: "Arimo", Arial, sans-serif;
@@ -51,18 +51,22 @@ button {
   cursor: var(--cursor-default);
 }
 
-body.is-cursor-click-02,
-body.is-cursor-click-02 a,
-body.is-cursor-click-02 button,
-body.is-cursor-click-02 .solution-viewport {
-  cursor: var(--cursor-click-02);
+body.is-cursor-loop-02,
+body.is-cursor-loop-02 a,
+body.is-cursor-loop-02 button,
+body.is-cursor-loop-02 .product-carousel,
+body.is-cursor-loop-02 .product-carousel-track,
+body.is-cursor-loop-02 .solution-viewport {
+  cursor: var(--cursor-loop-02);
 }
 
-body.is-cursor-click-03,
-body.is-cursor-click-03 a,
-body.is-cursor-click-03 button,
-body.is-cursor-click-03 .solution-viewport {
-  cursor: var(--cursor-click-03);
+body.is-cursor-loop-03,
+body.is-cursor-loop-03 a,
+body.is-cursor-loop-03 button,
+body.is-cursor-loop-03 .product-carousel,
+body.is-cursor-loop-03 .product-carousel-track,
+body.is-cursor-loop-03 .solution-viewport {
+  cursor: var(--cursor-loop-03);
 }
 
 .site-shell {
@@ -489,7 +493,7 @@ body.is-cursor-click-03 .solution-viewport {
   height: 790px;
   overflow-x: auto;
   overflow-y: hidden;
-  cursor: grab;
+  cursor: var(--cursor-default);
   scrollbar-width: none;
   user-select: none;
   touch-action: pan-y;
@@ -500,7 +504,7 @@ body.is-cursor-click-03 .solution-viewport {
 }
 
 .product-carousel.is-dragging {
-  cursor: grabbing;
+  cursor: var(--cursor-default);
 }
 
 .product-carousel-track {
@@ -508,7 +512,7 @@ body.is-cursor-click-03 .solution-viewport {
   gap: 0;
   width: max-content;
   padding: 18px 0;
-  cursor: grab;
+  cursor: var(--cursor-default);
 }
 
 .product-carousel-track img {
@@ -633,19 +637,19 @@ body.is-cursor-click-03 .solution-viewport {
 .brand-mark {
   position: absolute;
   top: 0;
-  left: 775px;
-  width: 370px;
-  height: 96px;
+  left: 722px;
+  width: 476px;
+  height: 114px;
   overflow: hidden;
   pointer-events: auto;
 }
 
 .brand-mark img {
   position: absolute;
-  top: 6px;
+  top: 4px;
   left: 0;
-  width: 370px;
-  height: 88px;
+  width: 476px;
+  height: 106px;
   object-fit: contain;
 }
 
@@ -876,7 +880,7 @@ body.is-cursor-click-03 .solution-viewport {
 }
 
 .solution-viewport.is-dragging {
-  cursor: var(--cursor-click-03);
+  cursor: var(--cursor-default);
 }
 
 .solution-cards {

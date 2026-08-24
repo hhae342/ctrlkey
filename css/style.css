@@ -149,7 +149,7 @@ body.is-cursor-click-03 .solution-viewport {
 .product-hero-section {
   z-index: 2;
   height: 1080px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .product-hero-img {
@@ -1108,10 +1108,4 @@ body.is-cursor-click-03 .solution-viewport {
 .is-preparing-reveal {
   opacity: 0;
   transform: translateY(28px);
-}
-
-@media (max-width: 1919px) {
-  .site-shell {
-    transform-origin: top left;
-  }
 }

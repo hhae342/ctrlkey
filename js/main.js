@@ -112,7 +112,6 @@ function initProductPage() {
   if (!productShell) return;
 
   const hero = document.querySelector(".product-hero-section");
-  const keySection = document.querySelector(".product-key-section");
   const heroCopies = [
     { element: document.querySelector(".product-hero-copy-small") },
     { element: document.querySelector(".product-hero-copy-main") },
@@ -120,9 +119,9 @@ function initProductPage() {
   const updateHeroCopyScroll = () => {
     if (!hero) return;
     const shellScale = productShell.getBoundingClientRect().width / productShell.offsetWidth || 1;
-    const destinationBottom = hero.offsetHeight + (keySection?.offsetHeight || 0) - 80;
+    const destinationBottom = hero.offsetHeight - 80;
     const viewportDesignHeight = window.innerHeight / shellScale;
-    const endScroll = Math.max(hero.offsetHeight + (keySection?.offsetHeight || 0) - viewportDesignHeight, hero.offsetHeight * 0.82);
+    const endScroll = Math.max(destinationBottom - viewportDesignHeight, hero.offsetHeight * 0.82);
     const progress = mapProgress(window.scrollY - hero.offsetTop, 0, endScroll);
     const easedProgress = progress * progress;
     heroCopies.forEach(({ element }) => {
@@ -532,11 +531,12 @@ function initFallingCopy() {
 function scaleDesktopCanvas() {
   const shell = document.querySelector(".site-shell");
   if (!shell) return;
-  const scale = window.innerWidth / 1920;
+  const scale = Math.min(window.innerWidth / 1920, 2560 / 1920);
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
   document.documentElement.style.setProperty("--footer-padding-bottom", `${400 / scale}px`);
   shell.style.transform = `scale(${scale})`;
+  shell.style.marginLeft = `${Math.max((window.innerWidth - 1920 * scale) / 2, 0)}px`;
   document.body.style.minHeight = `${shell.offsetHeight * scale}px`;
 }
 

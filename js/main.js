@@ -733,14 +733,12 @@ function scaleDesktopCanvas() {
   if (!shell) return;
   const isSingleExperiencePage = !!shell.querySelector(".experience-section") && !shell.querySelector(".footer-section");
   const widthScale = window.innerWidth / 1920;
-  const heightScale = window.innerHeight / 1080;
-  const scale = isSingleExperiencePage ? Math.min(widthScale, heightScale) : widthScale;
-  const scaledWidth = 1920 * scale;
+  const scale = widthScale;
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
   document.documentElement.style.setProperty("--footer-padding-bottom", `${90 / scale}px`);
   shell.style.transform = `scale(${scale})`;
-  shell.style.marginLeft = isSingleExperiencePage ? `${Math.max((window.innerWidth - scaledWidth) / 2, 0)}px` : "0px";
+  shell.style.marginLeft = "0px";
   document.body.style.minHeight = isSingleExperiencePage ? `${window.innerHeight}px` : `${shell.offsetHeight * scale}px`;
   document.body.style.overflowY = isSingleExperiencePage ? "hidden" : "";
   document.documentElement.style.overflowY = isSingleExperiencePage ? "hidden" : "";

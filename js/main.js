@@ -42,6 +42,7 @@ function initLanding() {
 
 function initCustomCursor() {
   let cursorStep = 1;
+  let cursorLoop = 0;
 
   const applyCursorStep = () => {
     document.body.classList.remove("is-cursor-click-02", "is-cursor-click-03");
@@ -54,7 +55,12 @@ function initCustomCursor() {
     applyCursorStep();
   };
 
-  window.addEventListener("click", advanceCursor);
+  const restartCursorLoop = () => {
+    if (cursorLoop) window.clearInterval(cursorLoop);
+    cursorLoop = window.setInterval(advanceCursor, 5000);
+  };
+
+  restartCursorLoop();
 }
 
 function initNavigation() {
@@ -363,7 +369,7 @@ function initSolutionCards() {
 
 function initTypewriters() {
   const groups = [...document.querySelectorAll("[data-typewriter-group]")];
-  const write = (element, text, done) => {
+  const write = (element, text, done, group) => {
     let index = 0;
     element.textContent = "";
     element.classList.add("is-typing");
@@ -371,7 +377,10 @@ function initTypewriters() {
       index += element.closest(".strategy-copy") ? 4 : 1;
       element.textContent = text.slice(0, index);
       if (index < text.length) {
-        window.setTimeout(tick, element.closest(".strategy-copy") ? 8 : text[index - 1] === " " ? 8 : 14);
+        const progress = index / text.length;
+        const easeInDelay = 24 - progress * progress * 14;
+        const baseDelay = group?.dataset.typewriterEase === "in" ? easeInDelay : text[index - 1] === " " ? 8 : 14;
+        window.setTimeout(tick, element.closest(".strategy-copy") ? 8 : baseDelay);
       } else if (done) {
         element.classList.remove("is-typing");
         window.setTimeout(done, 80);
@@ -401,7 +410,7 @@ function initTypewriters() {
         write(item.element, item.text, () => {
           cursor += 1;
           next();
-        });
+        }, group);
       };
       next();
     };

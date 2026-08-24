@@ -11,9 +11,9 @@
   --canvas-scale: 1;
   --footer-padding-top: 200px;
   --footer-padding-bottom: 400px;
-  --cursor-default: url("../assets/custom-cursor-30-30-01.png") 15 15, auto;
-  --cursor-click-02: url("../assets/custom-cursor-30-30-02.png") 15 15, auto;
-  --cursor-click-03: url("../assets/custom-cursor-30-30-03.png") 15 15, auto;
+  --cursor-default: url("../assets/custom-cursor-50-50-01.png") 25 25, auto;
+  --cursor-click-02: url("../assets/custom-cursor-50-50-02.png") 25 25, auto;
+  --cursor-click-03: url("../assets/custom-cursor-50-50-03.png") 25 25, auto;
   --font-display: "BioRhyme Expanded", Georgia, serif;
   --font-body: "Pretendard", "Noto Sans KR", Arial, sans-serif;
   --font-menu: "Arimo", Arial, sans-serif;
@@ -541,7 +541,7 @@ body.is-cursor-click-03 .solution-viewport {
 }
 
 .material-copy {
-  top: 3022px;
+  top: 3135px;
   left: 120px;
   width: 632px;
 }

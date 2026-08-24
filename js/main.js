@@ -73,13 +73,13 @@ function initNavigation() {
     home: "home",
     overview: "home",
     problem: "problem",
-    insight: "problem",
+    insight: "home",
     product: "product",
-    solution: "product",
-    goal: "product",
-    strategy: "problem",
-    copy: "problem",
-    footer: "problem",
+    solution: "home",
+    goal: "home",
+    strategy: "home",
+    copy: "home",
+    footer: "home",
   };
 
   const updateActiveLink = () => {
@@ -308,6 +308,220 @@ function initProblem() {
   });
 }
 
+const experienceTypingTokens = new WeakMap();
+
+function typeExperienceText(element, text, done) {
+  if (!element) {
+    if (done) done();
+    return;
+  }
+  const token = Symbol("experience-typewriter");
+  experienceTypingTokens.set(element, token);
+  element.textContent = "";
+  element.classList.add("is-typing");
+  let index = 0;
+  const source = text || "";
+
+  const tick = () => {
+    if (experienceTypingTokens.get(element) !== token) return;
+    index += element.tagName === "H2" ? 1 : 2;
+    element.textContent = source.slice(0, index);
+    if (index < source.length) {
+      const progress = source.length ? index / source.length : 1;
+      const delay = Math.max(12, 38 - progress * progress * 22);
+      window.setTimeout(tick, delay);
+      return;
+    }
+    element.classList.remove("is-typing");
+    if (done) window.setTimeout(done, 90);
+  };
+
+  tick();
+}
+
+function typeExperienceSequence(items) {
+  let cursor = 0;
+  const next = () => {
+    const item = items[cursor];
+    if (!item) return;
+    typeExperienceText(item.element, item.text, () => {
+      cursor += 1;
+      next();
+    });
+  };
+  next();
+}
+
+function initExperienceGradientBands(section) {
+  const layer = section.querySelector("[data-experience-gradient]");
+  if (!layer) return;
+  const bands = [...layer.querySelectorAll(".experience-gradient-band")];
+  const BASE_GREEN = 40.281;
+  const BASE_FADE = 26.854;
+  const configs = [
+    { amp: 18, fadeAmp: 6, speed: 2.1, phase: 0 },
+    { amp: 22, fadeAmp: 7, speed: 1.82, phase: 0.9 },
+    { amp: 15, fadeAmp: 5, speed: 2.35, phase: 1.7 },
+    { amp: 24, fadeAmp: 8, speed: 1.68, phase: 2.6 },
+    { amp: 20, fadeAmp: 6, speed: 1.94, phase: 3.4 },
+    { amp: 17, fadeAmp: 7, speed: 2.18, phase: 4.1 },
+    { amp: 23, fadeAmp: 5, speed: 1.74, phase: 4.9 },
+    { amp: 16, fadeAmp: 8, speed: 2.28, phase: 5.7 },
+    { amp: 19, fadeAmp: 6, speed: 1.88, phase: 6.5 },
+  ];
+  let isPlaying = false;
+  let animationTime = 0;
+  let lastTime = performance.now();
+
+  const render = (time) => {
+    const isPageActive = section.dataset.experiencePage === "2";
+    const delta = Math.min(time - lastTime, 80);
+    lastTime = time;
+    if (isPageActive && isPlaying) animationTime += delta / 1000;
+
+    bands.forEach((band, index) => {
+      const config = configs[index] || configs[0];
+      const wave = Math.sin(animationTime * config.speed + config.phase) - Math.sin(config.phase);
+      const fadePhase = config.phase * 1.17;
+      const fadeWave = Math.cos(animationTime * (config.speed * 0.76) + fadePhase) - Math.cos(fadePhase);
+      const greenEnd = clamp(BASE_GREEN + wave * config.amp, 10, 72);
+      const fadeWidth = clamp(BASE_FADE + fadeWave * config.fadeAmp, 16, 42);
+      const whiteStart = clamp(greenEnd + fadeWidth, greenEnd + 12, 96);
+      band.style.setProperty("--green-end", `${greenEnd.toFixed(2)}%`);
+      band.style.setProperty("--white-start", `${whiteStart.toFixed(2)}%`);
+    });
+
+    window.requestAnimationFrame(render);
+  };
+
+  section.addEventListener("click", (event) => {
+    if (section.dataset.experiencePage !== "2") return;
+    if (event.target.closest("a, button")) return;
+    isPlaying = !isPlaying;
+  });
+
+  window.requestAnimationFrame(render);
+}
+
+function initExperienceColorGradient(section) {
+  const layer = section.querySelector("[data-experience-color]");
+  if (!layer) return;
+  const green = { r: 158, g: 255, b: 67 };
+  const blue = { r: 25, g: 163, b: 255 };
+  const cycleDuration = 12000;
+  let animationTime = 0;
+  let lastTime = performance.now();
+
+  const mix = (start, end, progress) => Math.round(start + (end - start) * progress);
+
+  const render = (time) => {
+    const delta = Math.min(time - lastTime, 80);
+    lastTime = time;
+    if (section.dataset.experiencePage === "3") animationTime += delta;
+
+    const phase = (animationTime % cycleDuration) / cycleDuration;
+    const progress = (1 - Math.cos(phase * Math.PI * 2)) / 2;
+    const color = [
+      mix(green.r, blue.r, progress),
+      mix(green.g, blue.g, progress),
+      mix(green.b, blue.b, progress),
+    ].join(", ");
+    layer.style.setProperty("--temperature-color-rgb", color);
+
+    window.requestAnimationFrame(render);
+  };
+
+  window.requestAnimationFrame(render);
+}
+
+function initExperiencePages() {
+  const section = document.querySelector(".experience-section");
+  if (!section) return;
+  initExperienceGradientBands(section);
+  initExperienceColorGradient(section);
+  const buttons = [...section.querySelectorAll("[data-experience-target]")];
+  const title = section.querySelector("[data-experience-title]");
+  const prompt = section.querySelector("[data-experience-prompt]");
+  const description = section.querySelector("[data-experience-description]");
+  const meta = section.querySelector("[data-experience-meta]");
+  const pages = {
+    1: {
+      title: "grounding 01\n호흡하기",
+      prompt: "긴장 상태에서는 호흡이 짧고 얕아진다\n호흡의 리듬에 집중해보세요",
+      description:
+        "호흡은 가장 기본적인 신체 감각 신호입니다.\n긴장된 순간, 짧아진 호흡을 천천히 인식하는 것은 현재의 몸으로 돌아오는 시작점이 됩니다. CTRL KEY는 일정한 리듬을 통해 사용자가 자신의 호흡 속도를 다시 인식하도록 돕습니다.",
+      meta: "Sense     호흡\nMode      Breathing Reset\nPattern   들숨 / 날숨 / 리듬\nEffect     긴장 완화 · 현재 인식",
+    },
+    2: {
+      title: "grounding 02\n진동하기",
+      prompt: "팀메신저 알림이 울릴 때마다 심장이 철렁했다면\n진동의 리듬에 집중해보세요",
+      description:
+        "진동은 몸에 직접 전달되는 촉각 신호입니다.\n갑작스러운 자극과 긴장의 순간, 주의는 외부 상황에 쉽게 머무릅니다. CTRL KEY는 일정한 진동 리듬을 통해 몸의 감각을 인식하고, 현재로 주의를 전환하도록 돕습니다.",
+      meta: "Sense     진동\nMode      Rhythm Reset\nPattern   반복 / 리듬 / 촉각\nEffect     긴장 완화 · 신체 감각 인식",
+    },
+    3: {
+      title: "grounding 03\n온도를 느끼기",
+      prompt: "상사의 말 한마디가 계속 머릿속에 남아있다면\n차갑고 따뜻한 감각에 집중해보세요",
+      description:
+        "온도 변화는 흐려진 감각을 즉각적으로 깨우는 신체 신호입니다.\n긴장이 남아 있거나 생각이 반복되는 순간, 차갑고 따뜻한 접촉은 주의를 현재의 몸으로 되돌립니다. CTRL KEY는 미세한 냉감과 온감 변화를 통해 감각을 환기하고, 지금 느껴지는 상태에 집중하도록 돕습니다.",
+      meta: "Sense     온도\nMode      Thermal Reset\nPattern   냉감 / 중립 / 온감\nEffect     감각 환기 · 긴장 완화 · 현재 인식",
+    },
+    4: {
+      title: "grounding 04\n압력을 체험하기",
+      prompt: "회의실 문 앞에서 심장이 빨라지고 손이 차가워졌다면\n손끝의 압력에 집중해보세요",
+      description:
+        "압력은 몸에 직접 전달되는 안정적인 감각 신호입니다.\n긴장이 높아지는 순간, 주의는 외부 상황에 머물고 몸은 쉽게 굳어집니다. CTRL KEY는 일정한 압력의 변화를 통해 몸의 감각을 인식하고, 현재의 상태로 돌아오도록 돕습니다.",
+      meta: "Sense     압력\nMode      Pressure Reset\nPattern   누름 / 유지 / 이완\nEffect     주의 전환 · 긴장 완화 · 현재 인식",
+    },
+    5: {
+      title: "grounding 05\n저주파를 체험하기",
+      prompt: "회의가 끝난 뒤에도 어깨와 턱에 힘이 풀리지 않는다면\n저주파의 리듬에 집중해보세요",
+      description:
+        "저주파는 낮고 일정한 리듬으로 전달되는 감각 신호입니다.\n긴장이 지속되는 순간, 몸은 쉽게 굳고 불편한 감각이 남을 수 있습니다. CTRL KEY는 부드러운 저주파 흐름을 통해 신체의 변화를 인식하고, 현재의 감각으로 돌아오도록 돕습니다.",
+      meta: "Sense     저주파\nMode      Frequency Reset\nPattern   파동 / 반복 / 흐름\nEffect     긴장 이완 · 신체 감각 인식",
+    },
+  };
+
+  const render = (page, updateRoute = true) => {
+    const content = pages[page] || pages[1];
+    const popupItems = [
+      { element: title, text: content.title },
+      { element: prompt, text: content.prompt },
+      { element: description, text: content.description },
+      { element: meta, text: content.meta },
+    ];
+    section.dataset.experiencePage = page;
+    popupItems.forEach(({ element }) => {
+      if (!element) return;
+      experienceTypingTokens.set(element, Symbol("experience-reset"));
+      element.textContent = "";
+      element.classList.remove("is-typing");
+    });
+    typeExperienceSequence(popupItems);
+    buttons.forEach((button) => {
+      const isActive = button.dataset.experienceTarget === page;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+    if (updateRoute) window.history.replaceState(null, "", `#experience-${page}`);
+  };
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      render(button.dataset.experienceTarget || "1");
+    });
+  });
+
+  const initialHash = window.location.hash.match(/^#experience-([1-5])$/);
+  render(initialHash?.[1] || "1", false);
+  typeExperienceSequence(
+    [...section.querySelectorAll(".experience-intro [data-experience-static-typewriter]")].map((element) => ({
+      element,
+      text: element.textContent.trim(),
+    }))
+  );
+}
+
 function clamp(value, min = 0, max = 1) {
   return Math.min(Math.max(value, min), max);
 }
@@ -517,13 +731,17 @@ function initFallingCopy() {
 function scaleDesktopCanvas() {
   const shell = document.querySelector(".site-shell");
   if (!shell) return;
-  const scale = window.innerWidth / 1920;
+  const isSingleExperiencePage = !!shell.querySelector(".experience-section") && !shell.querySelector(".footer-section");
+  const widthScale = window.innerWidth / 1920;
+  const scale = widthScale;
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
   document.documentElement.style.setProperty("--footer-padding-bottom", `${90 / scale}px`);
   shell.style.transform = `scale(${scale})`;
   shell.style.marginLeft = "0px";
   document.body.style.minHeight = `${shell.offsetHeight * scale}px`;
+  document.body.style.overflowY = isSingleExperiencePage ? "hidden" : "";
+  document.documentElement.style.overflowY = isSingleExperiencePage ? "hidden" : "";
 }
 
 function init() {
@@ -533,6 +751,7 @@ function init() {
   initLanding();
   initProductPage();
   initProblem();
+  initExperiencePages();
   initInsightScroll();
   initSolutionCards();
   initTypewriters();

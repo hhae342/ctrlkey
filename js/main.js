@@ -122,7 +122,7 @@ function initProductPage() {
     const shellScale = productShell.getBoundingClientRect().width / productShell.offsetWidth || 1;
     const destinationBottom = hero.offsetHeight + (keySection?.offsetHeight || 0) - 80;
     const viewportDesignHeight = window.innerHeight / shellScale;
-    const endScroll = Math.max(destinationBottom - viewportDesignHeight, hero.offsetHeight * 0.82);
+    const endScroll = Math.max(hero.offsetHeight + (keySection?.offsetHeight || 0) - viewportDesignHeight, hero.offsetHeight * 0.82);
     const progress = mapProgress(window.scrollY - hero.offsetTop, 0, endScroll);
     const easedProgress = progress * progress;
     heroCopies.forEach(({ element }) => {
@@ -532,7 +532,7 @@ function initFallingCopy() {
 function scaleDesktopCanvas() {
   const shell = document.querySelector(".site-shell");
   if (!shell) return;
-  const scale = Math.min(window.innerWidth / 1920, 1);
+  const scale = window.innerWidth / 1920;
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
   document.documentElement.style.setProperty("--footer-padding-bottom", `${400 / scale}px`);

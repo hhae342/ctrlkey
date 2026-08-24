@@ -68,8 +68,9 @@ body.is-cursor-click-03 .solution-viewport {
 .site-shell {
   position: relative;
   width: 1920px;
-  margin: 0 auto;
+  margin: 0;
   background: var(--gray-100);
+  transform-origin: top left;
 }
 
 .section {

@@ -1,6 +1,7 @@
 const motion = {
   fast: 280,
   normal: 760,
+  easeIn: "cubic-bezier(0.42, 0, 1, 1)",
   easeOut: "cubic-bezier(0.22, 1, 0.36, 1)",
   easeInOut: "cubic-bezier(0.65, 0, 0.35, 1)",
 };
@@ -9,7 +10,7 @@ function animateElement(element, keyframes, options) {
   if (!element) return null;
   return element.animate(keyframes, {
     fill: "forwards",
-    easing: motion.easeOut,
+    easing: motion.easeIn,
     ...options,
   });
 }
@@ -112,19 +113,22 @@ function initProductPage() {
   if (!productShell) return;
 
   const hero = document.querySelector(".product-hero-section");
-  const heroCopies = [
-    { element: document.querySelector(".product-hero-copy-small") },
-    { element: document.querySelector(".product-hero-copy-main") },
-  ];
+  const heroCopySmall = document.querySelector(".product-hero-copy-small");
+  const heroCopyMain = document.querySelector(".product-hero-copy-main");
   const updateHeroCopyScroll = () => {
     if (!hero) return;
     const shellScale = productShell.getBoundingClientRect().width / productShell.offsetWidth || 1;
-    const destinationBottom = hero.offsetHeight - 80;
+    const mainDestinationBottom = hero.offsetHeight - 80;
+    const smallDestinationBottom = mainDestinationBottom - (heroCopyMain?.offsetHeight || 0) - 44;
     const viewportDesignHeight = window.innerHeight / shellScale;
-    const endScroll = Math.max(destinationBottom - viewportDesignHeight, hero.offsetHeight * 0.82);
+    const endScroll = Math.max(mainDestinationBottom - viewportDesignHeight, hero.offsetHeight * 0.82);
     const progress = mapProgress(window.scrollY - hero.offsetTop, 0, endScroll);
     const easedProgress = progress * progress;
-    heroCopies.forEach(({ element }) => {
+
+    [
+      { element: heroCopySmall, destinationBottom: smallDestinationBottom },
+      { element: heroCopyMain, destinationBottom: mainDestinationBottom },
+    ].forEach(({ element, destinationBottom }) => {
       if (!element) return;
       const startBottom = Number.parseFloat(window.getComputedStyle(element).top) || 0;
       const maxTravel = Math.max(destinationBottom - startBottom, 0);
@@ -316,29 +320,11 @@ function mapProgress(value, start, end) {
 }
 
 function initInsightScroll() {
-  const section = document.querySelector(".insight-section");
   const left = document.querySelector('[data-insight-card="left"]');
   const right = document.querySelector('[data-insight-card="right"]');
-  if (!section || !left || !right) return;
-
-  const update = () => {
-    const rect = section.getBoundingClientRect();
-    const viewport = window.innerHeight || 1;
-    const travel = 1080;
-    const entryProgress = mapProgress(viewport - rect.top, 0, viewport * 0.48);
-    const pinnedDistance = Math.max(rect.height - viewport, 1);
-    const pinnedProgress = clamp(-rect.top / pinnedDistance);
-    const leftProgress = 1 - Math.pow(1 - entryProgress, 1.45);
-    const rightProgress = mapProgress(pinnedProgress, 0.16, 0.62);
-    const leftY = (1 - leftProgress) * travel;
-    const rightY = (1 - rightProgress) * travel;
-    left.style.transform = `translateY(${leftY}px)`;
-    right.style.transform = `translateY(${rightY}px)`;
-  };
-
-  window.addEventListener("scroll", update, { passive: true });
-  window.addEventListener("resize", update);
-  update();
+  if (!left || !right) return;
+  left.style.transform = "none";
+  right.style.transform = "none";
 }
 
 function initSolutionCards() {
@@ -531,12 +517,12 @@ function initFallingCopy() {
 function scaleDesktopCanvas() {
   const shell = document.querySelector(".site-shell");
   if (!shell) return;
-  const scale = Math.min(window.innerWidth / 1920, 2560 / 1920);
+  const scale = window.innerWidth / 1920;
   document.documentElement.style.setProperty("--canvas-scale", scale.toString());
   document.documentElement.style.setProperty("--footer-padding-top", `${200 / scale}px`);
   document.documentElement.style.setProperty("--footer-padding-bottom", `${400 / scale}px`);
   shell.style.transform = `scale(${scale})`;
-  shell.style.marginLeft = `${Math.max((window.innerWidth - 1920 * scale) / 2, 0)}px`;
+  shell.style.marginLeft = "0px";
   document.body.style.minHeight = `${shell.offsetHeight * scale}px`;
 }
 

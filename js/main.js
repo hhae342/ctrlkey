@@ -19,6 +19,7 @@ function initLanding() {
   const landing = document.querySelector(".landing-section");
   const video = document.querySelector("[data-landing-video]");
   if (landing && video) {
+    video.loop = true;
     video.addEventListener("canplay", () => {
       landing.classList.add("is-video-ready");
       video.play().catch(() => landing.classList.remove("is-video-ready"));
@@ -38,6 +39,18 @@ function initLanding() {
       { duration: index === 0 ? 900 : 720, delay: 120 + index * 180 }
     );
   });
+}
+
+function initOverviewReveal() {
+  const overview = document.querySelector(".overview-section");
+  if (!overview) return;
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) window.setTimeout(() => overview.classList.add("is-visible"), 180);
+    },
+    { threshold: 0.28 }
+  );
+  observer.observe(overview);
 }
 
 function initCustomCursor() {
@@ -135,7 +148,7 @@ function initProductPage() {
 
   const revealItems = [
     ...document.querySelectorAll(
-      "[data-product-reveal], [data-product-fade], .product-detail-section [data-product-type-group]"
+      "[data-product-reveal], [data-product-fade], .product-key-copy[data-product-type-group], .product-detail-section [data-product-type-group]"
     ),
   ];
   const revealObserver = new IntersectionObserver(
@@ -168,17 +181,18 @@ function initProductPage() {
   }));
 
   typeTargets.forEach(({ element }) => {
-    element.textContent = "";
+    element.innerHTML = "";
   });
 
   const typeElement = ({ element, text }) => {
     if (element.dataset.typed === "true") return;
     element.dataset.typed = "true";
     let index = 0;
+    const isKeyCopy = !!element.closest(".product-key-copy");
     const tick = () => {
-      index += element.tagName === "H2" || element.tagName === "H1" ? 2 : 3;
-      element.textContent = text.slice(0, index);
-      if (index < text.length) window.setTimeout(tick, 12);
+      index += element.tagName === "H2" || element.tagName === "H1" ? 1 : isKeyCopy ? 2 : 3;
+      element.innerHTML = text.slice(0, index).replace(/\n/g, "<br>");
+      if (index < text.length) window.setTimeout(tick, isKeyCopy ? 24 : 12);
     };
     tick();
   };
@@ -200,12 +214,14 @@ function initProductPage() {
   const updateDesignCards = () => {
     if (!design || !leftCard || !rightCard) return;
     const rect = design.getBoundingClientRect();
-    const progress = mapProgress(window.innerHeight - rect.top, 0, window.innerHeight * 0.8);
-    const easedProgress = progress * progress;
-    leftCard.style.opacity = `${easedProgress}`;
-    leftCard.style.transform = `translateY(${(1 - easedProgress) * 260}px)`;
-    rightCard.style.opacity = `${easedProgress}`;
-    rightCard.style.transform = `translateY(${(1 - easedProgress) * 260}px)`;
+    const progress = mapProgress(window.innerHeight - rect.top, 0, window.innerHeight * 0.55);
+    const leftProgress = 1 - Math.pow(1 - progress, 3);
+    const rightRawProgress = mapProgress(progress, 0.18, 1);
+    const rightProgress = 1 - Math.pow(1 - rightRawProgress, 3);
+    leftCard.style.opacity = `${leftProgress}`;
+    leftCard.style.transform = `translateY(${(1 - leftProgress) * 260}px)`;
+    rightCard.style.opacity = `${rightProgress}`;
+    rightCard.style.transform = `translateY(${(1 - rightProgress) * 260}px)`;
   };
 
   window.addEventListener("scroll", updateDesignCards, { passive: true });
@@ -449,35 +465,35 @@ function initExperiencePages() {
       title: "grounding 01\n호흡하기",
       prompt: "긴장 상태에서는 호흡이 짧고 얕아진다\n호흡의 리듬에 집중해보세요",
       description:
-        "호흡은 가장 기본적인 신체 감각 신호입니다.\n긴장된 순간, 짧아진 호흡을 천천히 인식하는 것은 현재의 몸으로 돌아오는 시작점이 됩니다. CTRL KEY는 일정한 리듬을 통해 사용자가 자신의 호흡 속도를 다시 인식하도록 돕습니다.",
+        "호흡은 가장 기본적인 신체 감각 신호입니다.\n긴장된 순간, 짧아진 호흡을 천천히 인식하는 것은 현재의\n몸으로 돌아오는 시작점이 됩니다. Ctrl key는 일정한 리듬을\n통해 사용자가 자신의 호흡 속도를 다시 인식하도록 돕습니다.",
       meta: "Sense     호흡\nMode      Breathing Reset\nPattern   들숨 / 날숨 / 리듬\nEffect     긴장 완화 · 현재 인식",
     },
     2: {
       title: "grounding 02\n진동하기",
       prompt: "팀메신저 알림이 울릴 때마다 심장이 철렁했다면\n진동의 리듬에 집중해보세요",
       description:
-        "진동은 몸에 직접 전달되는 촉각 신호입니다.\n갑작스러운 자극과 긴장의 순간, 주의는 외부 상황에 쉽게 머무릅니다. CTRL KEY는 일정한 진동 리듬을 통해 몸의 감각을 인식하고, 현재로 주의를 전환하도록 돕습니다.",
+        "진동은 몸에 직접 전달되는 촉각 신호입니다.\n갑작스러운 자극과 긴장의 순간, 주의는 외부 상황에 쉽게\n머무릅니다. Ctrl key는 일정한 진동 리듬을 통해 몸의 감각을\n인식하고, 현재로 주의를 전환하도록 돕습니다.",
       meta: "Sense     진동\nMode      Rhythm Reset\nPattern   반복 / 리듬 / 촉각\nEffect     긴장 완화 · 신체 감각 인식",
     },
     3: {
       title: "grounding 03\n온도를 느끼기",
       prompt: "상사의 말 한마디가 계속 머릿속에 남아있다면\n차갑고 따뜻한 감각에 집중해보세요",
       description:
-        "온도 변화는 흐려진 감각을 즉각적으로 깨우는 신체 신호입니다.\n긴장이 남아 있거나 생각이 반복되는 순간, 차갑고 따뜻한 접촉은 주의를 현재의 몸으로 되돌립니다. CTRL KEY는 미세한 냉감과 온감 변화를 통해 감각을 환기하고, 지금 느껴지는 상태에 집중하도록 돕습니다.",
+        "온도 변화는 흐려진 감각을 즉각적으로 깨우는\n신체 신호입니다. 긴장이 남아 있거나 생각이 반복되는 순간,\n차갑고 따뜻한 접촉은 주의를 현재의 몸으로 되돌립니다.\nCtrl key는 미세한 냉감과 온감 변화를 통해 감각을 환기하고,\n지금 느껴지는 상태에 집중하도록 돕습니다.",
       meta: "Sense     온도\nMode      Thermal Reset\nPattern   냉감 / 중립 / 온감\nEffect     감각 환기 · 긴장 완화 · 현재 인식",
     },
     4: {
       title: "grounding 04\n압력을 체험하기",
       prompt: "회의실 문 앞에서 심장이 빨라지고 손이 차가워졌다면\n손끝의 압력에 집중해보세요",
       description:
-        "압력은 몸에 직접 전달되는 안정적인 감각 신호입니다.\n긴장이 높아지는 순간, 주의는 외부 상황에 머물고 몸은 쉽게 굳어집니다. CTRL KEY는 일정한 압력의 변화를 통해 몸의 감각을 인식하고, 현재의 상태로 돌아오도록 돕습니다.",
+        "압력은 몸에 직접 전달되는 안정적인 감각 신호입니다.\n긴장이 높아지는 순간, 주의는 외부 상황에 머물고 몸은 쉽게\n굳어집니다. Ctrl key는 일정한 압력의 변화를 통해 몸의 감각을 인식하고, 현재의 상태로 돌아오도록 돕습니다.",
       meta: "Sense     압력\nMode      Pressure Reset\nPattern   누름 / 유지 / 이완\nEffect     주의 전환 · 긴장 완화 · 현재 인식",
     },
     5: {
       title: "grounding 05\n저주파를 체험하기",
       prompt: "회의가 끝난 뒤에도 어깨와 턱에 힘이 풀리지 않는다면\n저주파의 리듬에 집중해보세요",
       description:
-        "저주파는 낮고 일정한 리듬으로 전달되는 감각 신호입니다.\n긴장이 지속되는 순간, 몸은 쉽게 굳고 불편한 감각이 남을 수 있습니다. CTRL KEY는 부드러운 저주파 흐름을 통해 신체의 변화를 인식하고, 현재의 감각으로 돌아오도록 돕습니다.",
+        "저주파는 낮고 일정한 리듬으로 전달되는 감각 신호입니다.\n긴장이 지속되는 순간, 몸은 쉽게 굳고 불편한 감각이\n남을 수 있습니다. Ctrl key는 부드러운 저주파 흐름을\n통해 신체의 변화를 인식하고, 현재의 감각으로\n돌아오도록 돕습니다.",
       meta: "Sense     저주파\nMode      Frequency Reset\nPattern   파동 / 반복 / 흐름\nEffect     긴장 이완 · 신체 감각 인식",
     },
   };
@@ -546,6 +562,22 @@ function initSolutionCards() {
   let isDragging = false;
   let startX = 0;
   let startScrollLeft = 0;
+  const cards = [...track.children];
+
+  cards.forEach((card) => {
+    card.addEventListener("mouseenter", () => {
+      card.classList.add("is-hovered");
+    });
+    card.addEventListener("mouseleave", () => {
+      card.classList.remove("is-hovered");
+    });
+    card.addEventListener("pointerdown", () => {
+      card.classList.remove("is-hovered");
+    });
+    card.addEventListener("click", () => {
+      card.classList.remove("is-hovered");
+    });
+  });
 
   const stopDragging = () => {
     isDragging = false;
@@ -574,18 +606,27 @@ function initSolutionCards() {
 
 function initTypewriters() {
   const groups = [...document.querySelectorAll("[data-typewriter-group]")];
+  const getTypewriterText = (element) => {
+    const readNode = (node) => {
+      if (node.nodeType === 3) return node.textContent;
+      if (node.nodeName === "BR") return "\n";
+      return [...node.childNodes].map(readNode).join("");
+    };
+    return [...element.childNodes].map(readNode).join("").trim();
+  };
   const write = (element, text, done, group) => {
     let index = 0;
-    element.textContent = "";
+    const isStrategy = !!element.closest(".strategy-copy");
+    element.innerHTML = "";
     element.classList.add("is-typing");
     const tick = () => {
-      index += element.closest(".strategy-copy") ? 4 : 1;
-      element.textContent = text.slice(0, index);
+      index += isStrategy ? 2 : 1;
+      element.innerHTML = text.slice(0, index).replace(/\n/g, "<br>");
       if (index < text.length) {
         const progress = index / text.length;
         const easeInDelay = 24 - progress * progress * 14;
         const baseDelay = group?.dataset.typewriterEase === "in" ? easeInDelay : text[index - 1] === " " ? 8 : 14;
-        window.setTimeout(tick, element.closest(".strategy-copy") ? 8 : baseDelay);
+        window.setTimeout(tick, isStrategy ? 24 : baseDelay);
       } else if (done) {
         element.classList.remove("is-typing");
         window.setTimeout(done, 80);
@@ -599,15 +640,16 @@ function initTypewriters() {
   groups.forEach((group) => {
     const items = [...group.querySelectorAll("[data-typewriter]")].map((element) => ({
       element,
-      text: element.textContent.trim(),
+      text: getTypewriterText(element),
     }));
     items.forEach(({ element }) => {
-      element.textContent = "";
+      element.innerHTML = "";
     });
 
     const run = () => {
       if (group.dataset.typed === "true") return;
       group.dataset.typed = "true";
+      if (group.classList.contains("strategy-copy")) group.classList.add("is-visible");
       let cursor = 0;
       const next = () => {
         const item = items[cursor];
@@ -622,7 +664,13 @@ function initTypewriters() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) run();
+        if (!entry.isIntersecting) return;
+        if (group.classList.contains("strategy-copy")) {
+          group.classList.add("is-visible");
+          window.setTimeout(run, 420);
+          return;
+        }
+        run();
       },
       { threshold: 0.45 }
     );
@@ -749,6 +797,7 @@ function init() {
   initCustomCursor();
   initNavigation();
   initLanding();
+  initOverviewReveal();
   initProductPage();
   initProblem();
   initExperiencePages();

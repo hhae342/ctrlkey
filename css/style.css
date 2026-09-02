@@ -218,7 +218,7 @@ body.is-cursor-loop-03 .solution-viewport {
   top: 82px;
   left: 972px;
   width: 547px;
-  color: #ffffff;
+  color: #636363;
   opacity: 0;
   transform: translateY(42px);
   transition: opacity 1400ms cubic-bezier(0.42, 0, 1, 1), transform 1400ms cubic-bezier(0.42, 0, 1, 1);
@@ -780,7 +780,7 @@ body.is-cursor-loop-03 .solution-viewport {
   height: 1080px;
   overflow: hidden;
   background: var(--gray-95);
-  color: #ffffff;
+  color: #636363;
 }
 
 .experience-section[data-experience-page="1"] {
@@ -1130,7 +1130,7 @@ body.is-cursor-loop-03 .solution-viewport {
   font-weight: 800;
   line-height: 76px;
   letter-spacing: -2.88px;
-  color: #ffffff;
+  color: #636363;
   opacity: 1;
   visibility: visible;
   white-space: nowrap;
@@ -1227,7 +1227,7 @@ body.is-cursor-loop-03 .solution-viewport {
   padding: 350px 50px 0;
   overflow: hidden;
   background: transparent;
-  color: var(--gray-15);
+  color: #636363;
 }
 
 .experience-popup h3 {
